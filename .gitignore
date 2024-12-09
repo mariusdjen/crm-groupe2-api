@@ -1,0 +1,11 @@
+# Dossiers virtuels
+env/
+venv/
+
+# Fichiers de configuration
+*.env
+# Fichiers Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
