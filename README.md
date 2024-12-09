@@ -24,7 +24,7 @@ Avant de commencer, vous devez avoir installé :
 Clonez le repository sur votre machine à l'aide de la commande suivante :
 
 ```bash
-git clone https://github.com/votre-utilisateur/heticetronics-dashboard.git
+git clone https://github.com/mariusdjen/crm-groupe2-api.git
 ```
 
 ### 2. Créer un environnement virtuel
