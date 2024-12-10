@@ -336,5 +336,60 @@ Les indicateurs clés de performance (KPIs) liés à l'analyse des ventes et des
     **Explication** : Le revenu moyen généré par chaque manager.  
     **Ce que cela mesure** : Permet de comprendre l'efficacité des managers en termes de revenu moyen généré.
 
-###obj
+### Intérêt Global de ces KPIs  
+
 Ces KPIs permettent de mesurer la performance commerciale à différents niveaux (produit, secteur, agent, manager, bureau) et d'identifier les points forts et les zones d'amélioration dans l'entreprise. Ils offrent des insights précieux pour optimiser les stratégies de vente, de prospection, de gestion des agents et de gestion des bureaux.
+
+
+
+Kpis product:
+
+
+### 1. **Product Name**  
+   **Explication :**  
+   - Identifie le produit dont les performances sont mesurées. Cela permet de lier les KPIs à un produit spécifique dans l'analyse des performances commerciales.
+
+---
+
+### 2. **Total Sales**  
+   **Explication :**  
+   - Correspond au nombre total de transactions réalisées pour le produit.  
+   - Permet d’évaluer la popularité du produit et d’identifier les produits les plus vendus.
+
+---
+
+### 3. **Total Revenue**  
+   **Explication :**  
+   - Représente les revenus totaux générés par les ventes du produit.  
+   - Ce KPI mesure la contribution financière du produit aux revenus globaux de l'entreprise.
+
+---
+
+### 4. **Total Quantity Sold**  
+   **Explication :**  
+   - Indique le nombre total d’unités du produit vendues.  
+   - Aide à comprendre le volume des ventes et à comparer la demande relative des différents produits.
+
+---
+
+### 5. **Sales by Region**  
+   **Explication :**  
+   - Montre une répartition des ventes par région géographique sous forme d’un dictionnaire (par exemple : `{ "Europe": 120, "Amérique": 95 }`).  
+   - Permet d’identifier les marchés performants et ceux nécessitant des efforts marketing supplémentaires.
+
+---
+
+### 6. **Sales by Sector**  
+   **Explication :**  
+   - Répartit les ventes par secteur ou catégorie industrielle, également sous forme d’un dictionnaire (par exemple : `{ "Retail": 300, "Wholesale": 200 }`).  
+   - Ce KPI met en lumière les segments de marché les plus profitables pour le produit.
+
+---
+
+### Intérêt Global de ces KPIs  
+- Ces KPIs permettent une vue d’ensemble des performances commerciales d’un produit.  
+- Ils facilitent la prise de décision, par exemple :  
+  - Renforcer les efforts marketing sur les régions ou secteurs sous-performants.  
+  - Ajuster les stratégies de tarification ou de distribution.  
+  - Identifier les opportunités de diversification ou d’amélioration.
+

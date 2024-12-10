@@ -9,6 +9,10 @@ from dotenv import load_dotenv
 from typing import List
 from typing import Dict
 from fastapi import FastAPI, HTTPException, Query
+from urllib.parse import unquote
+from collections import defaultdict
+
+
 
 # Environnement
 load_dotenv()
@@ -67,7 +71,6 @@ async def getAllsalesPipelineById(id:str):
                 status_code=response.status_code,
                 content={"message":f"Erreur http :{e}"}
             )
-
 #####products route
 #getAll
 @app.get('/getAllProducts')
@@ -106,7 +109,6 @@ async def getProductById(id:str):
                 content={"message":f"Erreur http :{e}"}
             )
 ##products KPIs
-
 #getAllProductsKpis
 @app.get('/getAllProductsKpis/')
 async def getAllProductsKpis():
@@ -301,59 +303,89 @@ async def getAllProductsKpis():
                 content={"message": f"Erreur interne : {str(e)}"}
             )
 
-
-@app.get("/product/kpis")
-async def get_specific_product_kpis(product_name: str = Query(..., description="Name of the product to filter")):
+#getAllProductsKpis
+""" 
+@app.get('/getProductKpis/{product_name}')
+async def getProductKpis(product_name: str):
     async with httpx.AsyncClient() as http_client:
         try:
-            # Requête à l'API Airtable
+            # Requête à l'API Airtable pour récupérer les données du sales_pipeline
             response = await http_client.get(f"{AIRTABLE_URL}sales_pipeline", headers=HEADERS)
             response.raise_for_status()
 
             # Récupérer les données JSON
             data = response.json()
             records = data.get("records", [])
-            pprint.pprint(records)
 
-            # Initialize metrics
+            if not records:
+                return JSONResponse(
+                    status_code=200,
+                    content={"message": "Aucun enregistrement trouvé."}
+                )
+
+            # Initialisation des métriques
+            total_sales = 0
             total_revenue = 0
-            total_products = 0
-            products_in_sector = {}
+            total_quantity_sold = 0
 
-            # Process data
+            # Calcul des KPIs
             for record in records:
                 fields = record.get("fields", {})
 
-                # Check if the product matches the filter
-                product = fields.get("product")
-                if product == product_name:
-                    total_products += 1
-                    revenue = fields.get("revenue (from account)", 0)
+                # Extraire le nom du produit et vérifier si c'est une liste
+                product = fields.get("product (from product)", [])
+                
+                if isinstance(product, list):
+                    product_name_record = product[0] if len(product) > 0 else ""                 
+                else:
+                    product_name_record = str(product)  # Assurer que c'est bien une chaîne de caractères
+
+                # Vérifier si le deal_stage est "won"
+                deal_stage = fields.get("deal_stage", "")
+                if deal_stage.lower() != "won":
+                    continue  # Passer à l'itération suivante si le deal_stage n'est pas "won"
+
+                # Comparer avec le produit recherché
+                if product_name.lower() == product_name_record.lower():  # Comparaison insensible à la casse
+                    # Extraire et valider le revenu qui est le prix de chque produit  avec deal_stage en won
+                    revenue = fields.get("sales_price (from product)", 0)
+                    pprint.pprint(revenue)
+                  
+                    if isinstance(revenue, list):
+                        revenue = revenue[0] if len(revenue) > 0 else 0
+                    try:
+                        revenue = float(revenue)
+                       
+                    except (ValueError, TypeError):
+                        revenue = 0
+
+                    # Ajouter au total des ventes et du revenu
+                    total_sales += 1
                     total_revenue += revenue
 
-                    # Sector-specific information
-                    sector = fields.get("sector (from account)", "Unknown")
-                    if sector not in products_in_sector:
-                        products_in_sector[sector] = 0
-                    products_in_sector[sector] += 1
+                    # Extraire la quantité vendue
+                    quantity_sold = fields.get("quantity_sold", 0)
+                    try:
+                        quantity_sold = int(quantity_sold)
+                    except (ValueError, TypeError):
+                        quantity_sold = 0
+                    
+                    # Ajouter à la quantité totale vendue
+                    total_quantity_sold += quantity_sold
 
-            if total_products == 0:
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"No records found for product: {product_name}"
+            # Si aucun produit n'a été trouvé
+            if total_sales == 0:
+                return JSONResponse(
+                    status_code=200,
+                    content={"message": f"Aucun produit '{product_name}' trouvé dans les ventes avec le deal_stage 'won'."}
                 )
 
-            # Calculate KPIs
-            avg_revenue = total_revenue / total_products if total_products > 0 else 0
-
+            # Retourner les KPIs pour le produit spécifique
             return {
                 "product_name": product_name,
-                "total_products": total_products,
+                "total_sales": total_sales,
                 "total_revenue": total_revenue,
-                "avg_revenue_per_product": avg_revenue,
-                "products_in_sector": products_in_sector
             }
-
 
         except httpx.HTTPStatusError as e:
             return JSONResponse(
@@ -365,10 +397,104 @@ async def get_specific_product_kpis(product_name: str = Query(..., description="
                 status_code=500,
                 content={"message": f"Erreur interne : {str(e)}"}
             )
+""" 
 
 
+@app.get('/getProductKpis/{product_name}')
+async def getProductKpis(product_name: str):
+    async with httpx.AsyncClient() as http_client:
+        try:
+            # Requête à l'API Airtable pour récupérer les données du sales_pipeline
+            response = await http_client.get(f"{AIRTABLE_URL}sales_pipeline", headers=HEADERS)
+            response.raise_for_status()
 
+            # Récupérer les données JSON
+            data = response.json()
+            records = data.get("records", [])
 
+            if not records:
+                return JSONResponse(
+                    status_code=200,
+                    content={"message": "Aucun enregistrement trouvé."}
+                )
+
+            # Initialisation des métriques
+            total_sales = 0
+            total_revenue = 0
+            sales_by_region = defaultdict(int)  # Ventes par région
+            sales_by_sector = defaultdict(int)  # Ventes par secteur
+
+            # Calcul des KPIs
+            for record in records:
+                fields = record.get("fields", {})
+
+                # Extraire le nom du produit et vérifier si c'est une liste
+                product = fields.get("product (from product)", [])
+                if isinstance(product, list):
+                    product_name_record = product[0] if len(product) > 0 else ""                 
+                else:
+                    product_name_record = str(product)
+
+                # Vérifier si le deal_stage est "won"
+                deal_stage = fields.get("deal_stage", "")
+                if deal_stage.lower() != "won":
+                    continue
+
+                # Comparer avec le produit recherché
+                if product_name.lower() == product_name_record.lower():  # Comparaison insensible à la casse
+                    # Extraire et valider le revenu (prix du produit avec deal_stage 'won')
+                    revenue = fields.get("sales_price (from product)", 0)
+                    if isinstance(revenue, list):
+                        revenue = revenue[0] if len(revenue) > 0 else 0
+                    try:
+                        revenue = float(revenue)
+                    except (ValueError, TypeError):
+                        revenue = 0
+
+                    # Ajouter au total des ventes et du revenu
+                    total_sales += 1
+                    total_revenue += revenue
+
+                    
+
+                    # Calculer les ventes par région
+                    region = fields.get("office_location (from account)", "Inconnu")
+                    if isinstance(region, list):
+                        region = region[0] if len(region) > 0 else "Inconnu"
+                    sales_by_region[region] += 1
+
+                    # Calculer les ventes par secteur
+                    sector = fields.get("sector (from account)", "Inconnu")
+                    if isinstance(sector, list):
+                        sector = sector[0] if len(sector) > 0 else "Inconnu"
+                    sales_by_sector[sector] += 1
+
+            # Si aucun produit n'a été trouvé
+            if total_sales == 0:
+                return JSONResponse(
+                    status_code=200,
+                    content={"message": f"Aucun produit '{product_name}' trouvé dans les ventes avec le deal_stage 'won'."}
+                )
+
+            # Retourner les KPIs pour le produit spécifique
+            return {
+                "product_name": product_name,
+                "total_sales": total_sales,
+                "total_revenue": total_revenue,
+                "sales_by_region": dict(sales_by_region),  # Convertir defaultdict en dict
+                "sales_by_sector": dict(sales_by_sector)   # Convertir defaultdict en dict
+            }
+
+        except httpx.HTTPStatusError as e:
+            return JSONResponse(
+                status_code=e.response.status_code,
+                content={"message": f"Erreur HTTP : {e}"}
+            )
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"message": f"Erreur interne : {str(e)}"}
+            )
 
 
 ####Sales
