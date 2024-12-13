@@ -232,159 +232,36 @@ heticetronics-dashboard(ou le nom de votre projet)/
 
 Les indicateurs clés de performance (KPIs) liés à l'analyse des ventes et des revenus:
 
-1. **Total Products (Nombre total de produits)**  
-   **Explication** : C'est le total des produits disponibles dans le système ou en stock.  
-   **Ce que cela mesure** : Permet de mesurer l'inventaire global et de suivre la disponibilité des produits.
 
-2. **Total Revenue (Chiffre d'affaires total)**  
-   **Explication** : Le montant total des revenus générés par les ventes de produits/services.  
-   **Ce que cela mesure** : Indicateur principal de la performance financière d'une entreprise.
+Pour nos KPI’s sélectionnés, nous les avons classés par catégorie afin de mieux organiser notre vision du Dashboard. Au total, nous avons choisi 20 KPI’s.
 
-3. **Average Revenue per Product (Revenu moyen par produit)**  
-   **Explication** : La moyenne des revenus générés par chaque produit.  
-   **Ce que cela mesure** : Permet de voir quels produits génèrent le plus de revenus en moyenne, et de comprendre la rentabilité par produit.
+### 1. Performance des ventes :
+- Suivre l’évolution du nombre de ventes réalisées par année pour identifier les tendances dans le temps.
+- Analyser la répartition des ventes par région et mesurer les différences de performance géographique.
+- Étudier la répartition des ventes par produit afin de détecter les produits les plus performants.
+- Identifier les secteurs d’activité associés aux produits vendus pour comprendre leur distribution.
+- Déterminer les secteurs d’activité générant le plus grand volume de ventes, ainsi que ceux ayant les plus faibles performances, par année.
+- Calculer le total des ventes réalisées chaque année pour avoir une vue d’ensemble des performances globales.
+- Comptabiliser le nombre total de ventes perdues, par secteur et par année, pour repérer les faiblesses.
+- Identifier le client qui rapporte le plus de revenus/ventes.
 
-4. **Products per Sector (Produits par secteur)**  
-   **Explication** : Le nombre de produits répartis par secteur d’activité ou catégorie.  
-   **Ce que cela mesure** : Permet de suivre la diversité et la concentration des produits dans chaque secteur ou catégorie.
+### 2. Performances des équipes :
+- Identifier le meilleur agent de vente en termes de nombre de ventes réalisées, par année.
+- Déterminer le meilleur agent de vente selon le chiffre d’affaires généré par année.
+- Cartographier les équipes par manager pour analyser leur structure et leur efficacité.
+- Évaluer quelle équipe réalise le plus de ventes et identifier les clients associés à ces ventes.
 
-5. **Highest Revenue Agent (Agent ayant généré le revenu le plus élevé)**  
-   **Explication** : L'agent de vente ayant réalisé le plus grand chiffre d'affaires.  
-   **Ce que cela mesure** : Permet d'identifier les agents les plus performants en termes de revenus générés.
+### 3. Performances financières :
+- Suivre le chiffre d’affaires réalisé sur la dernière année de référence (2017).
+- Calculer les revenus moyens générés par région, par année, pour évaluer les différences géographiques.
+- Mesurer le prix moyen du panier par client, par année, pour comprendre les habitudes d’achat.
+- Identifier le meilleur pourcentage de remise accordé, du point de vue de l’entreprise, pour optimiser les politiques tarifaires.
 
-6. **Total Sales (Nombre total de ventes)**  
-   **Explication** : Le total des ventes réalisées sur une période donnée.  
-   **Ce que cela mesure** : Un indicateur global de l'activité commerciale et du volume de transactions réalisées.
+### 4. Gestion des comptes et fidélisation :
+- Analyser l’évolution du nombre de comptes (accounts) créés par année afin de mesurer la croissance client.
+- Calculer le pourcentage de clients actifs sur une période donnée pour évaluer le taux de rétention.
+- Mesurer le taux de récurrence des commandes par secteur et par année pour identifier les secteurs fidélisés.
 
-7. **Average Revenue per Sale (Revenu moyen par vente)**  
-   **Explication** : Le revenu moyen généré par chaque vente réalisée.  
-   **Ce que cela mesure** : Permet d’évaluer la valeur moyenne de chaque vente, utile pour ajuster la stratégie commerciale.
-
-8. **Total Revenue per Sector (Revenu total par secteur)**  
-   **Explication** : Le revenu total généré par chaque secteur ou catégorie de produits.  
-   **Ce que cela mesure** : Permet de voir la contribution de chaque secteur au revenu global de l'entreprise.
-
-9. **Average Revenue per Sector (Revenu moyen par secteur)**  
-   **Explication** : Le revenu moyen généré par chaque secteur d’activité.  
-   **Ce que cela mesure** : Permet de comprendre la rentabilité de chaque secteur.
-
-10. **Total Won Sales (Nombre total de ventes gagnées)**  
-    **Explication** : Le nombre de ventes conclues avec succès.  
-    **Ce que cela mesure** : Mesure de l'efficacité du processus de vente.
-
-11. **Total Won Revenue (Revenu total des ventes gagnées)**  
-    **Explication** : Le revenu total généré par les ventes réussies.  
-    **Ce que cela mesure** : Permet de quantifier le succès des ventes conclues.
-
-12. **Total Engaging Sales (Nombre total de ventes engageantes)**  
-    **Explication** : Ventes nécessitant une interaction prolongée, souvent plus complexes.  
-    **Ce que cela mesure** : Permet de mesurer l'engagement des prospects et la qualité des ventes réalisées.
-
-13. **Total Engaging Revenue (Revenu total des ventes engageantes)**  
-    **Explication** : Le revenu généré par les ventes engageantes.  
-    **Ce que cela mesure** : Permet de voir si les ventes plus complexes ou engageantes sont plus rentables.
-
-14. **Total Lost Sales (Nombre total de ventes perdues)**  
-    **Explication** : Le nombre de ventes qui ont échoué.  
-    **Ce que cela mesure** : Indicateur des opportunités perdues et aide à comprendre pourquoi les ventes échouent.
-
-15. **Total Lost Revenue (Revenu total perdu)**  
-    **Explication** : Le revenu qui aurait pu être généré mais qui a été perdu à cause de ventes non conclues.  
-    **Ce que cela mesure** : Permet de quantifier l'impact des ventes perdues sur le revenu global.
-
-16. **Total Prospecting Sales (Ventes provenant de la prospection)**  
-    **Explication** : Le nombre de ventes réalisées grâce à la prospection active de nouveaux clients.  
-    **Ce que cela mesure** : Mesure l'efficacité des efforts de prospection et la conversion des prospects.
-
-17. **Total Prospecting Revenue (Revenu provenant de la prospection)**  
-    **Explication** : Le revenu généré par les ventes obtenues via la prospection.  
-    **Ce que cela mesure** : Permet de voir la rentabilité des efforts de prospection.
-
-18. **Total Sales per Office Location (Ventes par emplacement/bureau)**  
-    **Explication** : Le nombre total de ventes réalisées par chaque emplacement ou bureau.  
-    **Ce que cela mesure** : Permet de comparer les performances entre différents sites.
-
-19. **Total Revenue per Office Location (Revenu par emplacement/bureau)**  
-    **Explication** : Le revenu total généré par chaque emplacement ou bureau.  
-    **Ce que cela mesure** : Permet de comparer la rentabilité de chaque site de l'entreprise.
-
-20. **Average Revenue per Office Location (Revenu moyen par emplacement/bureau)**  
-    **Explication** : Le revenu moyen généré par chaque bureau ou emplacement.  
-    **Ce que cela mesure** : Permet de comparer l'efficacité des différents bureaux.
-
-21. **Total Sales per Agent (Ventes par agent)**  
-    **Explication** : Le nombre total de ventes réalisées par chaque agent.  
-    **Ce que cela mesure** : Permet d’évaluer la productivité individuelle des agents de vente.
-
-22. **Total Revenue per Agent (Revenu par agent)**  
-    **Explication** : Le revenu généré par chaque agent.  
-    **Ce que cela mesure** : Permet de voir la contribution de chaque agent au chiffre d'affaires total.
-
-23. **Average Revenue per Agent (Revenu moyen par agent)**  
-    **Explication** : Le revenu moyen généré par chaque agent.  
-    **Ce que cela mesure** : Permet de voir la performance moyenne des agents de vente.
-
-24. **Total Sales per Manager (Ventes par manager)**  
-    **Explication** : Le nombre total de ventes réalisées par chaque manager ou responsable.  
-    **Ce que cela mesure** : Permet de mesurer l'efficacité des managers dans la supervision des ventes.
-
-25. **Total Revenue per Manager (Revenu par manager)**  
-    **Explication** : Le revenu total généré sous la direction de chaque manager.  
-    **Ce que cela mesure** : Permet de suivre l'impact des managers sur les résultats financiers.
-
-26. **Average Revenue per Manager (Revenu moyen par manager)**  
-    **Explication** : Le revenu moyen généré par chaque manager.  
-    **Ce que cela mesure** : Permet de comprendre l'efficacité des managers en termes de revenu moyen généré.
-
-### Intérêt Global de ces KPIs  
-
-Ces KPIs permettent de mesurer la performance commerciale à différents niveaux (produit, secteur, agent, manager, bureau) et d'identifier les points forts et les zones d'amélioration dans l'entreprise. Ils offrent des insights précieux pour optimiser les stratégies de vente, de prospection, de gestion des agents et de gestion des bureaux.
-
-
-
-Kpis product:
-
-
-### 1. **Product Name**  
-   **Explication :**  
-   - Identifie le produit dont les performances sont mesurées. Cela permet de lier les KPIs à un produit spécifique dans l'analyse des performances commerciales.
-
----
-
-### 2. **Total Sales**  
-   **Explication :**  
-   - Correspond au nombre total de transactions réalisées pour le produit.  
-   - Permet d’évaluer la popularité du produit et d’identifier les produits les plus vendus.
-
----
-
-### 3. **Total Revenue**  
-   **Explication :**  
-   - Représente les revenus totaux générés par les ventes du produit.  
-   - Ce KPI mesure la contribution financière du produit aux revenus globaux de l'entreprise.
-
----
-
-### 4. **Total Quantity Sold**  
-   **Explication :**  
-   - Indique le nombre total d’unités du produit vendues.  
-   - Aide à comprendre le volume des ventes et à comparer la demande relative des différents produits.
-
----
-
-### 5. **Sales by Region**  
-   **Explication :**  
-   - Montre une répartition des ventes par région géographique sous forme d’un dictionnaire (par exemple : `{ "Europe": 120, "Amérique": 95 }`).  
-   - Permet d’identifier les marchés performants et ceux nécessitant des efforts marketing supplémentaires.
-
----
-
-### 6. **Sales by Sector**  
-   **Explication :**  
-   - Répartit les ventes par secteur ou catégorie industrielle, également sous forme d’un dictionnaire (par exemple : `{ "Retail": 300, "Wholesale": 200 }`).  
-   - Ce KPI met en lumière les segments de marché les plus profitables pour le produit.
-
----
 
 ### Intérêt Global de ces KPIs  
 - Ces KPIs permettent une vue d’ensemble des performances commerciales d’un produit.  
