@@ -15,7 +15,6 @@ from datetime import datetime
 
 
 
-
 # Environnement
 load_dotenv()
 
@@ -30,11 +29,6 @@ HEADERS = {
 }
 
 app = FastAPI()
-
-
-@app.get('/')
-def read():
-    return {"message": "Bienvenue bro !"}
 
 ####salesPipeline route
 #getAllsalesPipeline (Récupérer la liste des commandes )
@@ -1000,104 +994,6 @@ async def getAllProductsKpis():
                 content={"message": f"Erreur interne : {str(e)}"}
             )
 
-"""
-@app.get('/getProductKpis/{product_name}')
-async def getProductKpis(product_name: str):
-    async with httpx.AsyncClient() as http_client:
-        try:
-            # Requête à l'API Airtable pour récupérer les données du sales_pipeline
-            response = await http_client.get(f"{AIRTABLE_URL}sales_pipeline", headers=HEADERS)
-            response.raise_for_status()
-
-            # Récupérer les données JSON
-            data = response.json()
-            records = data.get("records", [])
-
-            if not records:
-                return JSONResponse(
-                    status_code=200,
-                    content={"message": "Aucun enregistrement trouvé."}
-                )
-
-            # Initialisation des métriques
-            total_sales = 0
-            total_revenue = 0
-            sales_by_region = defaultdict(int)  # Ventes par région
-            sales_by_sector = defaultdict(int)  # Ventes par secteur
-
-            # Calcul des KPIs
-            for record in records:
-                fields = record.get("fields", {})
-
-                # Extraire le nom du produit et vérifier si c'est une liste
-                product = fields.get("product (from product)", [])
-                if isinstance(product, list):
-                    product_name_record = product[0] if len(product) > 0 else ""                 
-                else:
-                    product_name_record = str(product)
-
-                # Vérifier si le deal_stage est "won"
-                deal_stage = fields.get("deal_stage", "")
-                if deal_stage.lower() != "won":
-                    continue
-
-                # Comparer avec le produit recherché
-                if product_name.lower() == product_name_record.lower():  # Comparaison insensible à la casse
-                    # Extraire et valider le revenu (prix du produit avec deal_stage 'won')
-                    revenue = fields.get("sales_price (from product)", 0)
-                    if isinstance(revenue, list):
-                        revenue = revenue[0] if len(revenue) > 0 else 0
-                    try:
-                        revenue = float(revenue)
-                    except (ValueError, TypeError):
-                        revenue = 0
-
-                    # Ajouter au total des ventes et du revenu
-                    total_sales += 1
-                    total_revenue += revenue
-
-                    
-
-                    # Calculer les ventes par région
-                    region = fields.get("office_location (from account)", "Inconnu")
-                    if isinstance(region, list):
-                        region = region[0] if len(region) > 0 else "Inconnu"
-                    sales_by_region[region] += 1
-
-                    # Calculer les ventes par secteur
-                    sector = fields.get("sector (from account)", "Inconnu")
-                    if isinstance(sector, list):
-                        sector = sector[0] if len(sector) > 0 else "Inconnu"
-                    sales_by_sector[sector] += 1
-
-            # Si aucun produit n'a été trouvé
-            if total_sales == 0:
-                return JSONResponse(
-                    status_code=200,
-                    content={"message": f"Aucun produit '{product_name}' trouvé dans les ventes avec le deal_stage 'won'."}
-                )
-
-            # Retourner les KPIs pour le produit spécifique
-            return {
-                "product_name": product_name,
-                "total_sales": total_sales,
-                "total_revenue": total_revenue,
-                "sales_by_region": dict(sales_by_region),  # Convertir defaultdict en dict
-                "sales_by_sector": dict(sales_by_sector)   # Convertir defaultdict en dict
-            }
-
-        except httpx.HTTPStatusError as e:
-            return JSONResponse(
-                status_code=e.response.status_code,
-                content={"message": f"Erreur HTTP : {e}"}
-            )
-        except Exception as e:
-            return JSONResponse(
-                status_code=500,
-                content={"message": f"Erreur interne : {str(e)}"}
-            )
-"""
-
 @app.get('/getProductKpis/{product_name}')
 async def getProductKpis(product_name: str):
     async with httpx.AsyncClient() as http_client:
@@ -1175,7 +1071,7 @@ async def getProductKpis(product_name: str):
             if total_sales_won == 0 and total_sales_lost == 0:
                 return JSONResponse(
                     status_code=200,
-                    content={"message": f"Aucun produit '{product_name}' trouvé dans les données."}
+                    content={"message": f"Aucune donnée disponible pour le produit: '{product_name}' d."}
                 )
 
             # Calcul des taux
@@ -1211,6 +1107,181 @@ async def getProductKpis(product_name: str):
                 content={"message": f"Erreur interne : {str(e)}"}
             )
 
-# ###Sales
+# ###agent and team  
+
+@app.get('/getAllTeamsKpis/')
+async def getAllTeamsKpis():
+    async with httpx.AsyncClient() as http_client:
+        try:
+            # Requête à l'API Airtable
+            response = await http_client.get(f"{AIRTABLE_URL}sales_pipeline", headers=HEADERS)
+            response.raise_for_status()
+
+            # Récupérer les données JSON
+            data = response.json()
+            records = data.get("records", [])
+
+            if not records:
+                return JSONResponse(
+                    status_code=200,
+                    content={"message": "Aucun enregistrement trouvé."}
+                )
+
+            # Initialiser les métriques
+            total_sales = 0
+            total_revenue = 0
+            total_sales_per_agent = {}
+            total_revenue_per_agent = {}
+            avg_revenue_per_agent = {}
+            total_sales_per_manager = {}
+            total_revenue_per_manager = {}
+            avg_revenue_per_manager = {}
+            sales_per_month = defaultdict(int)
+            revenue_per_month = defaultdict(float)
+
+            # Comptage des transactions par statut
+            deals_status_count = {"Won": 0, "Lost": 0, "Engaging": 0, "Prospecting": 0}
+
+            # Traitement des enregistrements pour calculer les KPIs
+            for record in records:
+                fields = record.get("fields", {})
+
+                # Extraire et valider le revenu
+                revenue = fields.get("revenue (from account)", 0)
+                if isinstance(revenue, list):
+                    revenue = revenue[0] if len(revenue) > 0 else 0
+                try:
+                    revenue = float(revenue)
+                except (ValueError, TypeError):
+                    revenue = 0
+
+                # Ajouter au revenu total
+                total_revenue += revenue
+
+                # Extraire et traiter le deal_stage pour le calcul des ventes
+                deal_stage = fields.get("deal_stage", "")
+                if deal_stage in deals_status_count:
+                    deals_status_count[deal_stage] += 1
+                    if deal_stage == "Won":
+                        total_sales += 1  # On ne compte que les ventes "Won" dans le total
+
+                # Extraire l'agent de vente pour les KPIs individuels
+                sales_agent = fields.get("sales_agent (from sales_agent)", "Unknown")
+                if isinstance(sales_agent, list):
+                    sales_agent = ", ".join(sales_agent) if len(sales_agent) > 0 else "Unknown"
+
+                # Comptabiliser les ventes et revenus par agent
+                if sales_agent not in total_sales_per_agent:
+                    total_sales_per_agent[sales_agent] = 0
+                    total_revenue_per_agent[sales_agent] = 0
+                total_sales_per_agent[sales_agent] += 1
+                total_revenue_per_agent[sales_agent] += revenue
+
+                # Extraire le manager et comptabiliser les ventes et revenus par manager
+                manager = fields.get("manager (from sales_agent)", "Unknown")
+                if isinstance(manager, list):
+                    manager = ", ".join(manager) if len(manager) > 0 else "Unknown"
+
+                if manager not in total_sales_per_manager:
+                    total_sales_per_manager[manager] = 0
+                    total_revenue_per_manager[manager] = 0
+                total_sales_per_manager[manager] += 1
+                total_revenue_per_manager[manager] += revenue
+
+                # Incrémenter les ventes et les revenus par mois
+                close_date = fields.get("close_date", "")
+                try:
+                    close_date = datetime.strptime(close_date, "%Y-%m-%d") if close_date else None
+                    if close_date:
+                        month_year = close_date.strftime("%Y-%m")
+                        revenue_per_month[month_year] += revenue
+                        sales_per_month[month_year] += 1
+                except ValueError:
+                    pass
+
+            # Calcul des KPIs moyens
+            avg_revenue_per_agent = {
+                agent: total_revenue / total_sales_per_agent[agent] for agent, total_revenue in total_revenue_per_agent.items()
+            }
+
+            avg_revenue_per_manager = {
+                manager: total_revenue / total_sales_per_manager[manager] for manager, total_revenue in total_revenue_per_manager.items()
+            }
+
+            # Calcul des ratios de performance par agent
+            won_ratio_per_agent = {
+                agent: (deals_status_count["Won"] / total_sales_per_agent[agent]) * 100
+                if total_sales_per_agent[agent] > 0 else 0
+                for agent in total_sales_per_agent
+            }
+
+            lost_ratio_per_agent = {
+                agent: (deals_status_count["Lost"] / total_sales_per_agent[agent]) * 100
+                if total_sales_per_agent[agent] > 0 else 0
+                for agent in total_sales_per_agent
+            }
+
+            # Calcul des ratios de performance par manager
+            won_ratio_per_manager = {
+                manager: (deals_status_count["Won"] / total_sales_per_manager[manager]) * 100
+                if total_sales_per_manager[manager] > 0 else 0
+                for manager in total_sales_per_manager
+            }
+
+            lost_ratio_per_manager = {
+                manager: (deals_status_count["Lost"] / total_sales_per_manager[manager]) * 100
+                if total_sales_per_manager[manager] > 0 else 0
+                for manager in total_sales_per_manager
+            }
+
+            # Calcul des ratios globaux
+            total_deals = sum(deals_status_count.values())
+            won_ratio = (deals_status_count["Won"] / total_deals) * 100 if total_deals > 0 else 0
+            lost_ratio = (deals_status_count["Lost"] / total_deals) * 100 if total_deals > 0 else 0
+
+            # Filtrer les résultats "Unknown"
+            def filter_unknown(data):
+                return {k: v for k, v in data.items() if k != "Unknown" and v != "Unknown"}
+
+            total_sales_per_agent = filter_unknown(total_sales_per_agent)
+            total_revenue_per_agent = filter_unknown(total_revenue_per_agent)
+            avg_revenue_per_agent = filter_unknown(avg_revenue_per_agent)
+            total_sales_per_manager = filter_unknown(total_sales_per_manager)
+            total_revenue_per_manager = filter_unknown(total_revenue_per_manager)
+            avg_revenue_per_manager = filter_unknown(avg_revenue_per_manager)
+
+            # Retourner les KPIs
+            return {
+                "total_sales": total_sales,
+                "total_revenue": total_revenue,
+                "total_sales_per_agent": total_sales_per_agent,
+                "total_revenue_per_agent": total_revenue_per_agent,
+                "avg_revenue_per_agent": avg_revenue_per_agent,
+                "total_sales_per_manager": total_sales_per_manager,
+                "total_revenue_per_manager": total_revenue_per_manager,
+                "avg_revenue_per_manager": avg_revenue_per_manager,
+                "sales_per_month": dict(sales_per_month),
+                "revenue_per_month": dict(revenue_per_month),
+                "deals_status_count": deals_status_count,
+                "won_ratio": won_ratio,
+                "lost_ratio": lost_ratio,
+                "won_ratio_per_agent": won_ratio_per_agent,
+                "lost_ratio_per_agent": lost_ratio_per_agent,
+                "won_ratio_per_manager": won_ratio_per_manager,
+                "lost_ratio_per_manager": lost_ratio_per_manager,
+            }
+
+        except httpx.HTTPStatusError as e:
+            return JSONResponse(
+                status_code=e.response.status_code,
+                content={"message": f"Erreur HTTP : {e}"}
+            )
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"message": f"Erreur interne : {str(e)}"}
+            )
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
